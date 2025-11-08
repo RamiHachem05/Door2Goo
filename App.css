@@ -1,0 +1,22 @@
+.container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:24px;
+}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:10px 16px; border-radius:12px; border:none; cursor:pointer;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  color:#fff; font-weight:600; transition:transform .15s ease, opacity .15s ease;
+}
+.btn:hover{ transform:translateY(-1px); opacity:.95; }
+.btn:active{ transform:translateY(0); opacity:.9; }
+
+.card{
+  background:var(--card); border-radius:20px; padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.row{ display:flex; gap:16px; flex-wrap:wrap; }
+.col{ flex:1 1 280px; }

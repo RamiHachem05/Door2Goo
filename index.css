@@ -1,0 +1,28 @@
+:root{
+  --bg:#1a1a1f;
+  --text:#e8eaff;
+}
+html, body, #root { height:100%; }
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Poppins", sans-serif;
+}
+
+/* simple helpers */
+.container { max-width:1120px; margin:0 auto; padding:0 16px; }
+.btn { border:none; border-radius:12px; padding:12px 18px; color:#fff; background:#6366f1; cursor:pointer; }
+.btn:hover{ filter:brightness(1.07); }
+.link { color:#e8eaff; text-decoration:none; }
+.link:hover { text-decoration:underline; }
+
+/* navbar */
+.nav{ height:64px; position:sticky; top:0; z-index:50; backdrop-filter:blur(8px); background:rgba(0,0,0,.35); border-bottom:1px solid rgba(255,255,255,.12); }
+.nav__inner{ height:64px; display:flex; align-items:center; justify-content:space-between; }
+.nav__links{ display:flex; gap:8px; }
+.nav__link{ color:#e8eaff; text-decoration:none; padding:8px 10px; border-radius:10px; }
+.nav__link.active{ background:rgba(255,255,255,.12); }
+.nav__link:hover{ background:rgba(255,255,255,.06); }
+.brand .blue{ color:#60a5fa; } .brand .purple{ color:#a78bfa; }
