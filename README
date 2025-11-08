@@ -1,0 +1,163 @@
+````markdown
+# Door2Go – React Project
+
+This is a **React + Vite + Tailwind CSS** project.  
+
+
+---
+
+## Project Setup
+
+### 1- Clone the Repository
+If you haven’t already:
+```bash
+git clone https://github.com/<your-username>/Door2Go.git
+````
+
+Then navigate to the project folder:
+
+```bash
+cd Door2Go
+```
+
+---
+
+### 2- Install Dependencies
+
+Make sure you have **Node.js** and **npm** installed.
+
+Then install all required packages:
+
+```bash
+npm install
+```
+
+This will automatically install:
+
+* React & React DOM
+* React Router
+* Vite (for development & build)
+* Tailwind CSS, PostCSS, and Autoprefixer
+
+---
+
+### 3- Run the Project (Development Mode)
+
+To start the development server:
+
+```bash
+npm run dev
+```
+
+You’ll see output like:
+
+```
+VITE vX.X.X  ready in 1s
+Local:   http://localhost:5173/
+```
+
+Then open your browser and visit:
+ [http://localhost:5173](http://localhost:5173)
+
+---
+
+### 4️- Build for Production
+
+To create an optimized production build:
+
+```bash
+npm run build
+```
+
+The build output will be generated inside the **`dist/`** folder.
+
+---
+
+### 5️- Preview the Production Build
+
+You can preview the optimized build locally with:
+
+```bash
+npm run preview
+```
+
+---
+
+##  Project Structure
+
+```
+Door2Go/
+├── index.html
+├── package.json
+├── vite.config.js
+├── postcss.config.js
+├── tailwind.config.js
+├── main.jsx
+├── App.jsx
+├── index.css
+├── NavbarProject/
+│   ├── Home.jsx
+│   ├── Catalog.jsx
+│   ├── Dashboard.jsx
+│   ├── ContactUs.jsx
+│   └── ...
+└── assets/
+```
+
+---
+
+##  Requirements
+
+Make sure you have the following installed:
+
+* **Node.js** (v18+ recommended)
+* **npm** (v9+ recommended)
+
+To verify:
+
+```bash
+node -v
+npm -v
+```
+
+---
+
+##  Technologies Used
+
+* **React 18**
+* **Vite 5**
+* **React Router DOM**
+* **Tailwind CSS**
+* **PostCSS / Autoprefixer**
+
+---
+
+##  Notes
+
+* Modify `index.html` or `vite.config.js` as needed for deployment.
+* To reset dependencies:
+
+  ```bash
+  rm -rf node_modules
+  npm install
+  ```
+* If you encounter a port conflict, start Vite on a custom port:
+
+  ```bash
+  npm run dev -- --port 3000
+  ```
+
+---
+
+## 🧑‍💻 Author
+
+Rami Hashem
+Hamza Dayekh
+Mohammad Hazimeh
+Leopold Charles
+
+## License
+
+This project is licensed under the **MIT License** — feel free to use, modify, and distribute.
+
+```
