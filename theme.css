@@ -1,0 +1,57 @@
+/* Default = dark */
+:root,
+:root[data-theme="dark"] {
+  --bg:#0f0f15;
+  --card:#161822;
+  --text:#e7e9ff;
+  --muted:#a5afc3;
+  --line:rgba(255,255,255,0.12);
+  --glass-border: rgba(255,255,255,0.16);
+
+  --accent:#9f4ef8;   /* purple  */
+  --accent2:#39a0ff;  /* blue    */
+  --accent3:#ff5cf0;  /* pink    */
+  --success:#34d399;
+  --error:#f87171;
+}
+
+/* Light overrides */
+:root[data-theme="light"] {
+  --bg:#f6f8ff;
+  --card:#ffffff;
+  --text:#0e1325;
+  --muted:#49526a;
+  --line:rgba(0,0,0,0.12);
+  --glass-border: rgba(0,0,0,0.12);
+
+  /* keep accents; slightly toned for light */
+  --accent:#7e3af2;
+  --accent2:#2563eb;
+  --accent3:#d946ef;
+  --success:#059669;
+  --error:#dc2626;
+}
+
+/* Optional: smooth transition between themes */
+html, body, #root { height: 100%; }
+* { transition: background-color .18s ease, color .18s ease, border-color .18s ease; }
+
+:root[data-theme="dark"]{
+  --bg:#0f0f15;
+  --panel:#161822;
+  --text:#e7e9ff;
+  --muted:#a5afc3;
+  --line:rgba(255,255,255,0.12);
+  --accent:#9f4ef8; --accent2:#39a0ff; --accent3:#ff5cf0;
+}
+:root[data-theme="light"]{
+  --bg:#fbfbfe;
+  --panel:#ffffff;
+  --text:#0e1325;
+  --muted:#53607a;
+  --line:rgba(0,0,0,0.12);
+  --accent:#6b36d9; --accent2:#2b7fe6; --accent3:#d93dd0;
+}
+/* optional: body background to follow */
+body{ background:var(--bg); color:var(--text); }
+
