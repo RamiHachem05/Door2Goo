@@ -1,0 +1,16 @@
+.ot{ position:relative; min-height:calc(100vh - 64px); overflow:hidden; padding:32px 0 48px; }
+.ot__art{ position:absolute; top:16px; left:16px; width:240px; opacity:.95; pointer-events:none; user-select:none; }
+.ot__title{ font-size:24px; margin:0 0 16px; }
+
+.container { max-width:1120px; margin:0 auto; padding:0 16px; }
+.card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:16px; }
+.btn { border:none; border-radius:12px; padding:10px 14px; color:#fff; background:#6366f1; cursor:pointer; }
+.btn:hover{ filter:brightness(1.07); }
+.input { width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.35); color:#e8eaff; padding:10px 12px; outline:none; }
+.input:focus{ border-color:#818cf8; }
+
+.ot__grid{ display:grid; grid-template-columns:1fr; gap:16px; }
+@media (min-width:900px){ .ot__grid{ grid-template-columns:1fr 1fr; } }
+.ot__card{ padding:18px; border-radius:16px; }
+.ot__h{ font-size:18px; margin:0 0 10px; color:#b8c0ff; }
+.ot__muted{ color:#a6b0d4; font-size:14px; margin:0; }
