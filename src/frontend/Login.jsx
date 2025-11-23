@@ -1,10 +1,17 @@
+// Login.jsx
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ElectricBorder from "./ElectricBorder";
+import { useAuth } from "../AuthContext.jsx";
+
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -19,9 +26,9 @@ export default function Login() {
     setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
   };
 
-  const canSubmit = 
-    form.email.length > 0 && 
-    form.password.length > 0 && 
+  const canSubmit =
+    form.email.length > 0 &&
+    form.password.length > 0 &&
     !loading;
 
   const handleSubmit = async (e) => {
@@ -29,16 +36,47 @@ export default function Login() {
     if (!canSubmit) return;
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setToast("Welcome back! Redirecting to your dashboard…");
+    setToast("");
+
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Login failed");
+      }
+
+      login(data.user, data.token);
+
+      setToast(`Welcome back, ${data.user.name || "Door2Go user"}!`);
+
+      const redirectTo =
+        location.state?.redirectTo && location.state.redirectTo !== "/login"
+          ? location.state.redirectTo
+          : "/dashboard";
+
       setTimeout(() => {
         setToast("");
-        navigate("/dashboard");
-      }, 1200);
-    }, 900);
+        navigate(redirectTo, { replace: true });
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+      setToast(err.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
-
+  
   return (
     <div className="login-page">
       <style>{`

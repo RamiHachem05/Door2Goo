@@ -1,18 +1,18 @@
 import express from "express";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
-import { requireAuth } from "../middleware/auth.js";
+import { requireAuth, requireRole } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // GET /api/cart  (current user's cart)
-router.get("/", requireAuth, async (req, res) => {
+router.get("/", requireAuth, requireRole("customer"), async (req, res) => {
   const cart = await Cart.findOne({ userId: req.user._id }).populate("items.productId");
   res.json(cart || { userId: req.user._id, items: [] });
 });
 
 // POST /api/cart/add
-router.post("/add", requireAuth, async (req, res) => {
+router.post("/add", requireAuth, requireRole("customer"), async (req, res) => {
   const { productId, quantity = 1 } = req.body;
 
   const product = await Product.findById(productId);
@@ -30,7 +30,7 @@ router.post("/add", requireAuth, async (req, res) => {
 });
 
 // POST /api/cart/remove
-router.post("/remove", requireAuth, async (req, res) => {
+router.post("/remove", requireAuth, requireRole("customer"), async (req, res) => {
   const { productId } = req.body;
   const cart = await Cart.findOne({ userId: req.user._id });
   if (!cart) return res.json({ userId: req.user._id, items: [] });

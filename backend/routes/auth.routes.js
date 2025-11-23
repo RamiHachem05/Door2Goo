@@ -9,10 +9,17 @@ const router = express.Router();
 // POST /api/auth/signup
 router.post("/signup", async (req, res) => {
   try {
+    console.log("🔵 /api/auth/signup HIT with body:", req.body);
+
     const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
     const existing = await User.findOne({ email });
     if (existing) {
+      console.log("⚠️ Email already in use:", email);
       return res.status(400).json({ message: "Email already in use" });
     }
 
@@ -24,6 +31,8 @@ router.post("/signup", async (req, res) => {
       password: hashed,
       role: role || "customer",
     });
+
+    console.log("✅ User created:", user._id, user.email);
 
     const token = signToken({ id: user._id, role: user.role });
 
@@ -37,6 +46,7 @@ router.post("/signup", async (req, res) => {
       },
     });
   } catch (err) {
+    console.error("❌ Signup error:", err);
     res.status(500).json({ message: err.message });
   }
 });

@@ -44,25 +44,50 @@ export default function Signup() {
     !loading;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!canSubmit) return;
+  e.preventDefault();
+  if (!canSubmit) return;
 
-    setLoading(true);
-    // Animated step progression
+  setLoading(true);
+  setToast("");
+
+  try {
+    // 1️⃣ SEND SIGNUP REQUEST TO BACKEND
+    const res = await fetch("http://localhost:5000/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Signup failed");
+
+    // 2️⃣ ANIMATION STEPS
     for (let step = 2; step <= 4; step++) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 250));
       setCurrentStep(step);
     }
 
+    // 3️⃣ SHOW SUCCESS MESSAGE
+    setToast("Welcome to Door2Go! Your account has been created.");
+
+    // 4️⃣ REDIRECT TO LOGIN
     setTimeout(() => {
-      setLoading(false);
-      setToast("Welcome to Door2Go! Your account has been created.");
-      setTimeout(() => {
-        setToast("");
-        navigate("/dashboard");
-      }, 2000);
-    }, 1200);
-  };
+      setToast("");
+      navigate("/login");
+    }, 1500);
+
+  } catch (err) {
+    console.error(err);
+    setToast(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const nextStep = () => {
     if (currentStep < 4) setCurrentStep(currentStep + 1);
