@@ -3,6 +3,8 @@ import React, { useMemo, useState } from "react";
 import { motion } from 'framer-motion';
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Package, DollarSign, Users, Clock, TrendingUp, Edit2, Eye } from 'lucide-react';
+import { useAuth } from "../AuthContext.jsx";
+import { Navigate } from "react-router-dom";
 
 export default function Dashboard() {
   const [range, setRange] = useState("week"); // 'today' | 'week' | 'month'
@@ -192,6 +194,8 @@ export default function Dashboard() {
       alert('Opening Delivery Management Panel...\n\nFeatures:\n- View all pending deliveries\n- Assign drivers\n- Update delivery status\n- Contact customers/drivers');
     }, 300);
   };
+const { user } = useAuth();
+if (user.role !== "admin") return <Navigate to="/home" replace />;
 
   return (
     <div className="page">

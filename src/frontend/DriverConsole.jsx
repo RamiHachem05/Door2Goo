@@ -1,6 +1,7 @@
 // src/DriverConsole.jsx
 import React, { useState, useEffect } from "react";
-
+import { useAuth } from "../AuthContext.jsx";
+import { Navigate } from "react-router-dom";
 const MOCK_DELIVERIES = [
   { 
     id: "D2G-78421", 
@@ -63,7 +64,9 @@ export default function DriverConsole() {
       default: return '#a5afc3';
     }
   };
-
+const { user } = useAuth();
+if (user.role !== "driver" && user.role !== "admin")
+  return <Navigate to="/home" replace />;
   return (
     <div className="page">
       <style>{`

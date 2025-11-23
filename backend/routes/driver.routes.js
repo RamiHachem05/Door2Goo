@@ -30,7 +30,11 @@ router.post(
 );
 
 // GET /api/driver/location/:driverId
-router.get("/location/:driverId", async (req, res) => {
+router.get(
+  "/location/:driverId",
+  requireAuth,
+  requireRole("admin", "driver"),
+  async (req, res) => {
   const doc = await DriverLocation.findOne({
     driverId: req.params.driverId,
   }).populate("driverId");

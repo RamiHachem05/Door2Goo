@@ -2,12 +2,12 @@ import express from "express";
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
-import { requireAuth } from "../middleware/auth.js";
+import { requireAuth, requireRole } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // POST /api/checkout  -> create order from cart
-router.post("/", requireAuth, async (req, res) => {
+router.post("/", requireAuth, requireRole("customer"), async (req, res) => {
   try {
     const { address, paymentMethod } = req.body;
 
