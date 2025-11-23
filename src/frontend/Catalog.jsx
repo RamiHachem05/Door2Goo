@@ -1,4 +1,4 @@
-// src/NavbarProject/Catalog.jsx
+// src/frontend/Catalog.jsx
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 

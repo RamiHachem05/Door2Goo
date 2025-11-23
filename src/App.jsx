@@ -6,18 +6,18 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 
 
 import GetStarted from "./GetStarted.jsx";
-import Home from "./NavbarProject/home.jsx";
-import Catalog from "./NavbarProject/Catalog.jsx";
-import OrderTracking from "./NavbarProject/OrderTracking.jsx";
-import Details from "./NavbarProject/Details.jsx"; 
+import Home from "./frontend/home.jsx";
+import Catalog from "./frontend/Catalog.jsx";
+import OrderTracking from "./frontend/OrderTracking.jsx";
+import Details from "./frontend/Details.jsx"; 
 import About from "./about.jsx";
 
 // App pages
-import ContactUs from "./NavbarProject/ContactUs.jsx";
-import Dashboard from "./NavbarProject/Dashboard.jsx";
-import DriverConsole from "./NavbarProject/DriverConsole.jsx";
-import Login from "./NavbarProject/Login.jsx";
-import Signup from "./NavbarProject/Signup.jsx";
+import ContactUs from "./frontend/ContactUs.jsx";
+import Dashboard from "./frontend/Dashboard.jsx";
+import DriverConsole from "./frontend/DriverConsole.jsx";
+import Login from "./frontend/Login.jsx";
+import Signup from "./frontend/Signup.jsx";
 import { AuthProvider } from "./AuthContext.jsx";
 
 
