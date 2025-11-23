@@ -1,0 +1,14 @@
+/* full-viewport background */
+#lights {
+  position: fixed; /* was absolute */
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none; /* let buttons be clickable */
+}
+#lights canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
