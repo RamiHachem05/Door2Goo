@@ -1,8 +1,20 @@
 // src/frontend/Catalog.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import api from "../frontend/axios"; // axios instance
 
-const CATEGORIES = ["All", "Groceries", "Pharmacy", "Electronics", "Food", "Gifts", "Pets", "Office", "Home"];
+const CATEGORIES = [
+  "All",
+  "Groceries",
+  "Pharmacy",
+  "Electronics",
+  "Food",
+  "Gifts",
+  "Pets",
+  "Office",
+  "Home",
+];
 
 export default function Catalog() {
   const navigate = useNavigate();
@@ -15,24 +27,50 @@ export default function Catalog() {
   // ✅ FETCH PRODUCTS FROM BACKEND
   useEffect(() => {
     fetch("http://localhost:5000/api/products")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setProductsData(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("❌ Failed to fetch products:", err);
+        toast.error("Failed to load products");
         setLoading(false);
       });
   }, []);
 
+  // ✅ REAL ADD TO CART LOGIC (AUTH LOCKED)
+  const addToCart = async (productId) => {
+    const token = localStorage.getItem("d2g_token");
+
+    if (!token) {
+      toast.error("Please log in to add items to your cart");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await api.post("/cart/add", {
+        productId,
+        quantity: 1,
+      });
+
+      toast.success("Item added to cart ✅");
+      window.dispatchEvent(new Event("cart-updated"));
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add item to cart");
+    }
+  };
+
   // ✅ FILTERING + SEARCH + SORTING
   const products = useMemo(() => {
-    let items = productsData.filter(p =>
+    let items = productsData.filter((p) =>
       p.name.toLowerCase().includes(query.toLowerCase())
     );
 
-    if (category !== "All") items = items.filter(p => p.category === category);
+    if (category !== "All") items = items.filter((p) => p.category === category);
 
     switch (sort) {
       case "price-asc":
@@ -71,22 +109,12 @@ export default function Catalog() {
         .search{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.06); border:1px solid var(--glass-border); padding:8px 12px; border-radius:12px; min-width:240px; }
         .search input{ background:transparent; border:none; outline:none; color:var(--text); width:180px; font-size:14px; }
 
-        /* ✅ DROPDOWN FIX */
         .select{
           background-color: #20222a !important;
           color: #ffffff !important;
           border:1px solid var(--glass-border);
           border-radius:12px;
           padding:10px 12px;
-          cursor:pointer;
-          outline:none;
-          appearance:none;
-          -webkit-appearance:none;
-          -moz-appearance:none;
-        }
-        .select option{
-          background-color:#20222a !important;
-          color:#ffffff !important;
         }
 
         .chips{ display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 16px; }
@@ -118,9 +146,17 @@ export default function Catalog() {
             <div className="title">Catalog</div>
             <div className="tools">
               <div className="search">
-                <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search services…" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search services…"
+                />
               </div>
-              <select className="select" value={sort} onChange={(e)=>setSort(e.target.value)}>
+              <select
+                className="select"
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+              >
                 <option value="featured">Featured</option>
                 <option value="price-asc">Price Low → High</option>
                 <option value="price-desc">Price High → Low</option>
@@ -130,22 +166,31 @@ export default function Catalog() {
           </div>
 
           <div className="chips">
-            {CATEGORIES.map(c => (
-              <button key={c} className={`chip ${category===c ? "active":""}`} onClick={()=>setCategory(c)}>
+            {CATEGORIES.map((c) => (
+              <button
+                key={c}
+                className={`chip ${category === c ? "active" : ""}`}
+                onClick={() => setCategory(c)}
+              >
                 {c}
               </button>
             ))}
           </div>
 
-          {loading ? <h3>Loading products...</h3> : (
+          {loading ? (
+            <h3>Loading products...</h3>
+          ) : (
             <div className="grid">
-              {products.map(p => (
+              {products.map((p) => (
                 <article className="card" key={p._id}>
                   <div className="thumb">
                     <img
                       src={p.image || "https://via.placeholder.com/400"}
                       alt={p.name}
-                      onError={(e) => e.currentTarget.src = "https://via.placeholder.com/400"}
+                      onError={(e) =>
+                        (e.currentTarget.src =
+                          "https://via.placeholder.com/400")
+                      }
                     />
                   </div>
                   <div className="body">
@@ -156,10 +201,18 @@ export default function Catalog() {
                       <div className="rating">★ {p.rating || 0}</div>
                     </div>
                     <div className="actions">
-                      <button className="btn btn-ghost" onClick={()=>navigate("/Details/" + p._id)}>
+                      <button
+                        className="btn btn-ghost"
+                        onClick={() => navigate("/Details/" + p._id)}
+                      >
                         Details
                       </button>
-                      <button className="btn btn-primary" onClick={()=>navigate("/Signup")}>
+
+                      {/* ✅ REAL CART BUTTON */}
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => addToCart(p._id)}
+                      >
                         Add Item
                       </button>
                     </div>

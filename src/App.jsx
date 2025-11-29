@@ -18,6 +18,9 @@ import Login from "./frontend/Login.jsx";
 import Signup from "./frontend/Signup.jsx";
 import { AuthProvider } from "./AuthContext.jsx";
 
+import Cart from "./frontend/Cart.jsx";
+import Checkout from "./frontend/Checkout.jsx";
+
 export default function App() {
   return (
     <AuthProvider>
@@ -43,6 +46,24 @@ export default function App() {
            </ProtectedRoute>
                          }
                           />
+             <Route
+  path="/cart"
+  element={
+    <ProtectedRoute roles={["customer"]}>
+      <Cart />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/checkout"
+  element={
+    <ProtectedRoute roles={["customer"]}>
+      <Checkout />
+    </ProtectedRoute>
+  }
+/>
+             
 
              <Route
              path="/driver-console"
