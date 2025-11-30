@@ -90,18 +90,18 @@ const GooeyNav = () => {
   }
 
   const secondaryItems = !isAuthenticated
-    ? [
-        { label: "Login", href: "/login", type: "link" },
-        { label: "Sign Up", href: "/signup", type: "link" },
-      ]
-    : [
-        {
-          label: user?.name ? `Hi, ${user.name.split(" ")[0]}` : "Account",
-          href: "/dashboard",
-          type: "link",
-        },
-        { label: "Logout", href: "#logout", type: "logout" },
-      ];
+  ? [
+      { label: "Login", href: "/login", type: "link" },
+      { label: "Sign Up", href: "/signup", type: "link" },
+    ]
+  : [
+      {
+        label: user?.name ? `Hi, ${user.name.split(" ")[0]}` : "Account",
+        href: "/profile",
+        type: "link",
+      },
+      { label: "Logout", href: "#logout", type: "logout" },
+    ];
 
   const moveEffectTo = (el) => {
     if (!el || !containerRef.current || !filterRef.current || !textRef.current)

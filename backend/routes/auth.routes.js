@@ -6,20 +6,13 @@ import { requireAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// POST /api/auth/signup
+// ✅ SIGNUP
 router.post("/signup", async (req, res) => {
   try {
-    console.log("🔵 /api/auth/signup HIT with body:", req.body);
-
     const { name, email, password, role } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
 
     const existing = await User.findOne({ email });
     if (existing) {
-      console.log("⚠️ Email already in use:", email);
       return res.status(400).json({ message: "Email already in use" });
     }
 
@@ -31,8 +24,6 @@ router.post("/signup", async (req, res) => {
       password: hashed,
       role: role || "customer",
     });
-
-    console.log("✅ User created:", user._id, user.email);
 
     const token = signToken({ id: user._id, role: user.role });
 
@@ -46,12 +37,11 @@ router.post("/signup", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("❌ Signup error:", err);
     res.status(500).json({ message: err.message });
   }
 });
 
-// POST /api/auth/login
+// ✅ LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -78,9 +68,60 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// GET /api/auth/me
+// ✅ GET CURRENT USER
 router.get("/me", requireAuth, (req, res) => {
   res.json(req.user);
+});
+
+// ✅ ✅ UPDATE USER NAME
+router.patch("/update-profile", requireAuth, async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({ message: "Invalid name" });
+    }
+
+    req.user.name = name.trim();
+    await req.user.save();
+
+    res.json({
+      user: {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ✅ ✅ CHANGE PASSWORD WITH VERIFICATION
+router.patch("/change-password", requireAuth, async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    const match = await bcrypt.compare(oldPassword, req.user.password);
+    if (!match) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "New password must be at least 6 characters" });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    req.user.password = hashed;
+    await req.user.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 export default router;
