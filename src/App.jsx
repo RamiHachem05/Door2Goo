@@ -17,6 +17,7 @@ import DriverConsole from "./frontend/DriverConsole.jsx";
 import Login from "./frontend/Login.jsx";
 import Signup from "./frontend/Signup.jsx";
 import { AuthProvider } from "./AuthContext.jsx";
+import Profile from "./frontend/Profile.jsx";
 
 import Cart from "./frontend/Cart.jsx";
 import Checkout from "./frontend/Checkout.jsx";
@@ -54,7 +55,14 @@ export default function App() {
     </ProtectedRoute>
   }
 />
-
+<Route
+  path="/profile"
+  element={
+    <ProtectedRoute roles={["customer", "admin", "driver"]}>
+      <Profile />
+    </ProtectedRoute>
+  }
+/>
 <Route
   path="/checkout"
   element={
