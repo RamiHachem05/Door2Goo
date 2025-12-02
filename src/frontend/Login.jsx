@@ -4,8 +4,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ElectricBorder from "./ElectricBorder";
 import { useAuth } from "../AuthContext.jsx";
-
-const API_BASE = import.meta.env.VITE_API_URL;
+import api from "../frontend/axios";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -39,18 +38,12 @@ export default function Login() {
     setToast("");
 
     try {
-      const res = await fetch(`${API_BASE}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-        }),
-      });
+      const res = await api.post("/auth/login", {
+  email: form.email,
+  password: form.password,
+});
 
-      const data = await res.json();
+const data = res.data;
 
       if (!res.ok) {
         throw new Error(data?.message || "Login failed");
