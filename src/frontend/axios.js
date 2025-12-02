@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "mongodb+srv://Door2Go:Door2Go123@door2go.opetk5r.mongodb.net/?appName=Door2Go",
 });
 
 // ✅ Auto-attach JWT
