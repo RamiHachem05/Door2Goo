@@ -1,163 +1,449 @@
-````markdown
-# Door2Go – React Project
+# 🚀 Door2Goo — Full-Stack Delivery Platform
 
-This is a **React + Vite + Tailwind CSS** project.  
-
-
----
-
-## Project Setup
-
-### 1- Clone the Repository
-If you haven’t already:
-```bash
-git clone https://github.com/<your-username>/Door2Go.git
-````
-
-Then navigate to the project folder:
-
-```bash
-cd Door2Go
-```
+Door2Goo is a **full-stack delivery web application** built with **React, Vite, Tailwind CSS, Node.js, Express, and MongoDB Atlas**.  
+The platform supports **Customers, Drivers, and Admins** with **role-based access control**, real-time order tracking, and full cart & checkout flow.
 
 ---
 
-### 2- Install Dependencies
+## 🌐 Deployment
 
-Make sure you have **Node.js** and **npm** installed.
-
-Then install all required packages:
-
-```bash
-npm install
-```
-
-This will automatically install:
-
-* React & React DOM
-* React Router
-* Vite (for development & build)
-* Tailwind CSS, PostCSS, and Autoprefixer
+- **Frontend:** Deployed on **Vercel**
+- **Backend:** Deployed on **Render.com**
+- **Database:** Hosted on **MongoDB Atlas**
 
 ---
 
-### 3- Run the Project (Development Mode)
+## ⚙️ Technologies Used
 
-To start the development server:
+### Frontend
+- React 18
+- Vite
+- Tailwind CSS
+- React Router DOM
+- Axios
+- PostCSS
 
-```bash
-npm run dev
-```
-
-You’ll see output like:
-
-```
-VITE vX.X.X  ready in 1s
-Local:   http://localhost:5173/
-```
-
-Then open your browser and visit:
- [http://localhost:5173](http://localhost:5173)
-
----
-
-### 4️- Build for Production
-
-To create an optimized production build:
-
-```bash
-npm run build
-```
-
-The build output will be generated inside the **`dist/`** folder.
+### Backend
+- Node.js
+- Express.js
+- MongoDB Atlas
+- JWT Authentication
+- bcrypt.js
+- Role-Based Access Control
 
 ---
 
-### 5️- Preview the Production Build
+## ✅ Features Implemented (After Phase 1)
 
-You can preview the optimized build locally with:
+### 🔐 Authentication & Roles
+- Customer, Driver, and Admin roles
+- Role-based page access
+- Secure login & logout
+- JWT token handling
 
-```bash
-npm run preview
-```
+### 👤 User Profiles
+- Phone number added for customers & drivers
+- Driver vehicle type added during signup
+- Profile editing with:
+  - Name update
+  - Password update (with verification)
+  - Profile picture upload
+- Email is locked from editing
+
+### 🛒 Cart & Checkout
+- Live cart tracking
+- Quantity control (increase, decrease, remove)
+- Address entry during checkout
+- Orders set to **Pending** after confirmation
+- Only **Customers** can add items to cart
+
+### 📦 Orders & Tracking
+- Order tracking page with:
+  - Item images
+  - Quantity
+  - Subtotal
+- Customer sees:
+  - Driver name
+  - Phone number
+  - Vehicle
+- Driver console with:
+  - Pending orders
+  - Pickup & Delivered actions
+- Both customer & driver can view delivered/pending orders
+
+### 🎨 UI Improvements
+- Animated checkout button
+- Styled cart matching catalog
+- Fixed navbar username display
+- Navbar folder renamed to `frontend`
 
 ---
 
-##  Project Structure
+## 📁 Project Structure (With Comments)
 
-```
-Door2Go/
-├── index.html
+---
+
+### 🔹 Root Structure
+
+
+Door2Goo/
+├── .env # Global environment variables
+├── .gitignore # Ignored files for GitHub
+├── eslint.config.js # ESLint configuration
+├── index.html # Root HTML file
+├── package.json # Project dependencies
+├── package-lock.json # Locked dependency versions
+├── reactproject.esproj # IDE project file
+├── README # Root documentation
+├── structure.txt # Generated project tree
+├── tailwind.config.js # Tailwind CSS configuration
+├── theme.css # Global theme styling
+├── ThemeContext.jsx # Global theme state manager
+├── ThemeProvider.jsx # Theme provider wrapper
+└── vite.config.js # Vite build configuration
+
+
+### 🔹 Backend Structure
+
+backend/
+├── config/
+│ └── db.js # MongoDB Atlas connection
+│
+├── middleware/
+│ ├── auth.js # JWT authentication middleware
+│ └── error.js # Global error handler
+│
+├── models/
+│ ├── Cart.js # Cart schema
+│ ├── DriverLocation.js # Driver live location schema
+│ ├── Order.js # Orders schema
+│ ├── Product.js # Products schema
+│ └── User.js # Users schema & roles
+│
+├── routes/
+│ ├── auth.routes.js # Login & Signup routes
+│ ├── cart.routes.js # Cart routes
+│ ├── checkout.routes.js # Checkout routes
+│ ├── driver.routes.js # Driver actions routes
+│ ├── orders.routes.js # Orders routes
+│ └── products.routes.js # Products routes
+│
+├── utils/
+│ └── tokens.js # JWT token generation
+│
+├── .env # Backend environment variables
 ├── package.json
-├── vite.config.js
-├── postcss.config.js
-├── tailwind.config.js
-├── main.jsx
-├── App.jsx
+├── package-lock.json
+└── server.js # Express server entry point
+
+
+### 🔹 Frontend (`src`) Structure
+
+
+src/
+├── Animations/ # UI motion effects
+├── assets/ # Images & static assets
+│
+├── Components/
+│ ├── GooeyNav.css # Animated navbar styling
+│ ├── GooeyNav.jsx # Animated navbar logic
+│ ├── LogoutButton.css # Logout styling
+│ ├── LogoutButton.jsx # Logout logic
+│ ├── Navbar.jsx # Main navbar
+│ ├── OrderTracking.css # Tracking styling
+│ ├── PlaceOrderButton.css
+│ └── PlaceOrderButton.jsx
+│
+├── frontend/
+│ ├── axios.js # API connection handler
+│ ├── Cart.jsx # Cart page
+│ ├── Catalog.jsx # Product listing
+│ ├── Checkout.jsx # Checkout page
+│ ├── ContactUs.jsx # Contact page
+│ ├── Dashboard.jsx # User dashboard
+│ ├── Details.jsx # Product details
+│ ├── DriverConsole.jsx # Driver management panel
+│ ├── ElectricBorder.css
+│ ├── ElectricBorder.jsx
+│ ├── home.jsx # Landing page
+│ ├── login.css
+│ ├── Login.jsx
+│ ├── OrderTracking.jsx
+│ ├── Profile.jsx
+│ ├── Signup.jsx
+│ └── vercel.json # Vercel deployment config
+│
+├── public/ # Static public files
+├── about.jsx
+├── App.css
+├── App.jsx # Root app component
+├── AuthContext.jsx # Global auth state
+├── GetStarted.jsx
 ├── index.css
-├── NavbarProject/
-│   ├── Home.jsx
-│   ├── Catalog.jsx
-│   ├── Dashboard.jsx
-│   ├── ContactUs.jsx
-│   └── ...
-└── assets/
-```
+├── layout.jsx
+├── main.jsx # React entry point
+├── postcss.config.js
+├── ProtectedRoute.jsx # Route protection
+└── README.md
+
+## 👨‍💻 Team Contributions
+
+### ✅ Leopold Charles
+- Backend restructuring & fixes
+- Role-based users (Customer, Driver, Admin)
+- Restricted unauthorized page access
+- Added phone & vehicle to driver signup
+- Profile updates (driver & customer)
+- Order tracking progress
+- Driver info visible to customer
+- Driver Console (Pickup & Delivered)
+- Deployment fixes & backend API fixes
+
+### ✅ Hamza Dayekh
+- Inserted mockup data into MongoDB Atlas
+- Linked backend & frontend for:
+  - Catalog items
+  - Product details
+
+### ✅ Rami Hachem
+- Created cart page
+- Styled cart to match catalog
+- Live navbar cart counter
+- Quantity control
+- Full checkout flow
+- Restricted cart access to Customers only
+
+### ✅ Mhamad Hazime
+- Fixed order tracking crashes
+- Order tracking UI adjustments
+- Pending & delivered orders display
+- Full profile page:
+  - Editable name
+  - Locked email
+  - Verified password change
+  - Picture upload
 
 ---
 
-##  Requirements
+## ✅ Requirements
 
-Make sure you have the following installed:
+- Node.js v18+
+- npm v9+
 
-* **Node.js** (v18+ recommended)
-* **npm** (v9+ recommended)
-
-To verify:
-
+Check versions:
 ```bash
 node -v
 npm -v
-```
+
+
+Additions
+
+## 🔑 Environment Variables Setup (.env)
+
+### 📌 Backend `.env` (inside /backend)
+
+PORT=5000
+MONGO_URI=mongodb+srv://Door2Go:Door2Go123@door2go.opetk5r.mongodb.net/door2goDB?retryWrites=true&w=majority&appName=Door2Go
+JWT_SECRET=your_secure_jwt_secret
+
+
+✅ Used for:
+- Database connection
+- User authentication
+- Token security
 
 ---
 
-##  Technologies Used
+### 📌 Frontend `.env` (root directory)
 
-* **React 18**
-* **Vite 5**
-* **React Router DOM**
-* **Tailwind CSS**
-* **PostCSS / Autoprefixer**
+VITE_API_URL=https://door2goo.onrender.com/api
 
----
-
-##  Notes
-
-* Modify `index.html` or `vite.config.js` as needed for deployment.
-* To reset dependencies:
-
-  ```bash
-  rm -rf node_modules
-  npm install
-  ```
-* If you encounter a port conflict, start Vite on a custom port:
-
-  ```bash
-  npm run dev -- --port 3000
-  ```
+✅ Used for:
+- Connecting frontend to backend API
 
 ---
 
-## 🧑‍💻 Author
+## 🔌 API Endpoints Overview
 
-Rami Hashem
-Hamza Dayekh
-Mohammad Hazimeh
-Leopold Charles
+### 🔐 Authentication
+- POST `/api/auth/register`
+- POST `/api/auth/login`
 
-## License
+### 👤 Users & Profiles
+- GET `/api/users/profile`
+- PUT `/api/users/profile`
 
-This project is licensed under the **MIT License** — feel free to use, modify, and distribute.
+### 🛒 Cart
+- POST `/api/cart/add`
+- GET `/api/cart`
+- DELETE `/api/cart/remove/:id`
 
-```
+### ✅ Checkout
+- POST `/api/checkout`
+
+### 📦 Orders
+- GET `/api/orders`
+- PUT `/api/orders/:id/status`
+
+### 🚚 Drivers
+- GET `/api/driver/orders`
+- PUT `/api/driver/pickup/:id`
+- PUT `/api/driver/deliver/:id`
+
+### 🛍 Products
+- GET `/api/products`
+- GET `/api/products/:id`
+
+---
+
+# 🔐 Phase 4 Documentation  
+## Security, Roles & Backup
+
+---
+
+## ✅ 1. Security Implementation
+
+### 🔑 Authentication System
+- JWT-based authentication
+- Secure password hashing using bcrypt
+- Token generation handled in:
+backend/utils/tokens.js
+
+
+
+### 🛡 Route Protection
+- Protected backend routes using:
+backend/middleware/auth.js
+
+
+- Only authenticated users can access:
+- Cart
+- Checkout
+- Orders
+- Profile
+
+### ❗ Global Error Handling
+- Centralized error handling in:
+backend/middleware/error.js
+
+
+
+---
+
+## ✅ 2. Role-Based Access Control (RBAC)
+
+### 🎭 Roles Implemented
+- **Customer**
+- **Driver**
+- **Admin**
+
+### ✅ Access Restrictions
+- Customers:
+- Can add to cart
+- Can checkout
+- Can track orders
+- Drivers:
+- Can only access Driver Console
+- Pickup & deliver orders
+- Admin:
+- Full backend access
+
+### 📂 Role Logic Stored In
+backend/models/User.js
+
+
+---
+
+## ✅ 3. Data Protection
+
+- Environment variables hidden using `.env`
+- `.gitignore` prevents leaking secrets
+- JWT secret protected
+- Database credentials secured via environment variables
+
+---
+
+## ✅ 4. Backup Strategy
+
+### 🗄 Database Backup (MongoDB Atlas)
+- Automatic cloud backups enabled
+- Point-in-time recovery
+- Daily snapshot backups
+
+### 💾 Code Backup
+- GitHub repository stores:
+  - All frontend
+  - All backend
+  - Deployment configs
+
+### ☁ Platform Redundancy
+- Frontend hosted on Vercel
+- Backend hosted on Render
+- Database on MongoDB Atlas
+- Each layer fully independent
+
+---
+
+## 🚀 Deployment Setup
+
+---
+
+### ✅ Frontend Deployment (Vercel)
+
+1. Push project to GitHub
+2. Import project into Vercel
+3. Set environment variable:
+VITE_API_URL=https://door2goo.onrender.com/api
+
+
+4. Deploy
+
+✅ Frontend auto rebuilds on each push
+
+---
+
+### ✅ Backend Deployment (Render)
+
+1. Create Web Service
+2. Connect GitHub backend repo
+3. Set Root Directory:
+backend
+
+4. Add environment variables:
+
+PORT=5000
+MONGO_URI=mongodb+srv://Door2Go:Door2Go123@door2go.opetk5r.mongodb.net/door2goDB?retryWrites=true&w=majority&appName=Door2Go
+JWT_SECRET=your_secure_jwt_secret
+
+5. Deploy
+
+✅ Backend stays online 24/7
+
+---
+
+### ✅ Database Setup (MongoDB Atlas)
+
+1. Create Free Cluster
+2. Add Database User
+3. Add Network Access `0.0.0.0/0`
+4. Copy connection string
+5. Paste into Render `.env`
+
+---
+
+## ✅ System Status Summary
+
+✅ Frontend: Online on Vercel  
+✅ Backend: Online on Render  
+✅ Database: Online on MongoDB Atlas  
+✅ Authentication: Working  
+✅ Roles: Fully Applied  
+✅ Cart, Checkout, Tracking: Fully Functional  
+✅ Driver Console: Fully Functional  
+✅ Profile & Security: Fully Active  
+✅ Deployment: Fully Stable  
+
+---
+
+
+
