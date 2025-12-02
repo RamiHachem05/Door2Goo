@@ -1,7 +1,7 @@
 // App.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Layout from "./Layout.jsx";
+import Layout from "./layout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
 import GetStarted from "./GetStarted.jsx";
