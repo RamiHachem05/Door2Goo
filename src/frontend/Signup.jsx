@@ -1,26 +1,53 @@
+// src/frontend/Signup.jsx
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Signup() {
   const navigate = useNavigate();
+
+  // 👤 Role toggle
+  const [role, setRole] = useState("customer");
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     confirm: "",
+    phone: "",
+    vehicle: "",
     accept: false,
   });
+
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
 
+  // ✅ PHONE: numbers-only + basic length validation
+  const formatPhone = (value) => {
+    // keep only digits, max 15
+    return value.replace(/\D/g, "").slice(0, 15);
+  };
+
+  const isValidPhone = (phone) => {
+    const digits = phone.replace(/\D/g, "");
+    return digits.length >= 8 && digits.length <= 15; // generic 8–15 digits
+  };
+
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    if (name === "phone") {
+      const cleaned = formatPhone(value);
+      setForm((f) => ({ ...f, phone: cleaned }));
+      return;
+    }
+
     setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
   };
 
+  // 🔐 password strength
   const passwordScore = () => {
     const p = form.password;
     let s = 0;
@@ -32,69 +59,77 @@ export default function Signup() {
     return Math.min(s, 4);
   };
 
-  const strengthLabel = ["Very Weak", "Weak", "Okay", "Good", "Strong"][passwordScore()];
-  const strengthColors = ["#ff6b6b", "#ffa500", "#ffd93d", "#6bcf7f", "#4ecdc4"];
+  const strengthLabel = ["Very Weak", "Weak", "Okay", "Good", "Strong"][
+    passwordScore()
+  ];
+  const strengthColors = [
+    "#ff6b6b",
+    "#ffa500",
+    "#ffd93d",
+    "#6bcf7f",
+    "#4ecdc4",
+  ];
 
-  const canSubmit = 
+  const canSubmit =
     form.name.trim() &&
     /\S+@\S+\.\S+/.test(form.email) &&
     form.password.length >= 8 &&
     form.password === form.confirm &&
     form.accept &&
-    !loading;
+    !loading &&
+    isValidPhone(form.phone) &&
+    (role !== "driver" || form.vehicle.trim().length > 0); // vehicle only for driver
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!canSubmit) return;
+    e.preventDefault();
 
-  setLoading(true);
-  setToast("");
-
-  try {
-    // 1️⃣ SEND SIGNUP REQUEST TO BACKEND
-    const res = await fetch("http://localhost:5000/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.name,
-        email: form.email,
-        password: form.password,
-      }),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Signup failed");
-
-    // 2️⃣ ANIMATION STEPS
-    for (let step = 2; step <= 4; step++) {
-      await new Promise((resolve) => setTimeout(resolve, 250));
-      setCurrentStep(step);
+    if (!isValidPhone(form.phone)) {
+      setToast("Invalid phone number.");
+      return;
     }
 
-    // 3️⃣ SHOW SUCCESS MESSAGE
-    setToast("Welcome to Door2Go! Your account has been created.");
+    if (!canSubmit) return;
 
-    // 4️⃣ REDIRECT TO LOGIN
-    setTimeout(() => {
-      setToast("");
-      navigate("/login");
-    }, 1500);
+    setLoading(true);
+    setToast("");
 
-  } catch (err) {
-    console.error(err);
-    setToast(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          role,
+          phone: form.phone,
+          vehicle: form.vehicle,
+        }),
+      });
 
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Signup failed");
 
-  const nextStep = () => {
-    if (currentStep < 4) setCurrentStep(currentStep + 1);
-  };
+      // animate steps 2→4 like the old version
+      for (let step = 2; step <= 4; step++) {
+        setCurrentStep(step);
+        // small delay between each step
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
 
-  const prevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
+      setToast("Welcome to Door2Go! Your account has been created.");
+
+      setTimeout(() => {
+        setToast("");
+        navigate("/login");
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      setToast(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -147,12 +182,12 @@ export default function Signup() {
 
         .signup-card {
           width: 100%;
-          max-width: 480px;
+          max-width: 720px;
           border: 1px solid var(--line);
           background: linear-gradient(180deg, rgba(22,24,34,.88), rgba(22,24,34,.7));
           backdrop-filter: blur(10px);
           border-radius: 24px;
-          padding: 40px;
+          padding: 40px 48px 34px;
           position: relative;
           z-index: 2;
           overflow: hidden;
@@ -182,7 +217,7 @@ export default function Signup() {
 
         .logo-section {
           text-align: center;
-          margin-bottom: 32px;
+          margin-bottom: 24px;
           position: relative;
         }
 
@@ -191,7 +226,7 @@ export default function Signup() {
           align-items: center;
           justify-content: center;
           gap: 12px;
-          margin-bottom: 20px;
+          margin-bottom: 10px;
           font-size: 32px;
         }
 
@@ -203,29 +238,47 @@ export default function Signup() {
         .blue { color: #39a0ff; }
         .purple { color: #9f4ef8; }
 
-        .title {
-          font-size: 28px;
-          font-weight: 700;
-          margin: 0 0 8px 0;
-          text-align: center;
-          background: linear-gradient(135deg, var(--accent), var(--accent2));
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
         .subtitle {
           color: var(--muted);
           text-align: center;
-          margin: 0 0 32px 0;
+          margin: 0;
           font-size: 14px;
+        }
+
+        /* ROLE TOGGLE */
+        .role-toggle{
+          margin: 18px auto 22px;
+          display:flex;
+          justify-content:center;
+          gap:8px;
+          background:rgba(0,0,0,0.32);
+          border-radius:999px;
+          padding:4px;
+          max-width:320px;
+        }
+        .role-btn{
+          flex:1;
+          border:none;
+          border-radius:999px;
+          padding:8px 16px;
+          font-size:14px;
+          font-weight:600;
+          cursor:pointer;
+          color:var(--muted);
+          background:transparent;
+          transition:all .2s ease;
+        }
+        .role-btn.active{
+          color:#fff;
+          background:linear-gradient(135deg,var(--accent),var(--accent2));
+          box-shadow:0 6px 20px rgba(0,0,0,.35);
         }
 
         /* Progress Steps */
         .progress-steps {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 32px;
+          margin-bottom: 28px;
           position: relative;
         }
 
@@ -293,7 +346,7 @@ export default function Signup() {
         }
 
         /* Form */
-        .signup-form { display: grid; gap: 20px; }
+        .signup-form { display: grid; gap: 18px; }
 
         .form-row {
           display: grid;
@@ -301,7 +354,8 @@ export default function Signup() {
           gap: 16px;
         }
 
-        @media (max-width: 520px) {
+        @media (max-width: 720px) {
+          .signup-card{ padding:28px 22px 24px; }
           .form-row { grid-template-columns: 1fr; }
         }
 
@@ -476,45 +530,6 @@ export default function Signup() {
 
         .login-link a:hover { color: var(--accent2); }
 
-        /* Success Animation */
-        .success-check {
-          width: 80px;
-          height: 80px;
-          margin: 0 auto 20px;
-          position: relative;
-        }
-
-        .check-circle {
-          width: 100%;
-          height: 100%;
-          border: 3px solid var(--accent);
-          border-radius: 50%;
-          position: relative;
-          animation: circle-anim 0.6s ease;
-        }
-
-        .check-mark {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%) scale(0);
-          animation: check-anim 0.4s ease 0.6s forwards;
-          color: var(--accent);
-          font-size: 40px;
-        }
-
-        @keyframes circle-anim {
-          0% { transform: scale(0); opacity: 0; }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes check-anim {
-          0% { transform: translate(-50%, -50%) scale(0); }
-          50% { transform: translate(-50%, -50%) scale(1.2); }
-          100% { transform: translate(-50%, -50%) scale(1); }
-        }
-
         /* toast */
         .toast{
           position: fixed;
@@ -566,22 +581,47 @@ export default function Signup() {
               <span className="purple">2Go</span>
             </div>
           </div>
-          <p className="subtitle">Create your account and start delivering happiness</p>
+          <p className="subtitle">
+            Create your account and start delivering happiness
+          </p>
         </div>
 
-        {/* Progress Steps */}
+        {/* Role toggle */}
+        <div className="role-toggle">
+          <button
+            type="button"
+            className={`role-btn ${role === "customer" ? "active" : ""}`}
+            onClick={() => setRole("customer")}
+          >
+            Customer
+          </button>
+          <button
+            type="button"
+            className={`role-btn ${role === "driver" ? "active" : ""}`}
+            onClick={() => setRole("driver")}
+          >
+            Driver
+          </button>
+        </div>
+
+        {/* Progress Steps (same as old UI) */}
         <div className="progress-steps">
-          <div className="progress-bar" style={{ width: `${(currentStep - 1) * 33.33}%` }} />
+          <div
+            className="progress-bar"
+            style={{ width: `${(currentStep - 1) * 33.33}%` }}
+          />
           {[1, 2, 3, 4].map((step) => (
             <div
               key={step}
-              className={`step ${currentStep >= step ? 'active' : ''} ${currentStep > step ? 'completed' : ''}`}
+              className={`step ${
+                currentStep >= step ? "active" : ""
+              } ${currentStep > step ? "completed" : ""}`}
             >
               <div className="step-circle">
-                {currentStep > step ? '✓' : step}
+                {currentStep > step ? "✓" : step}
               </div>
               <div className="step-label">
-                {['Info', 'Security', 'Review', 'Complete'][step - 1]}
+                {["Info", "Security", "Review", "Complete"][step - 1]}
               </div>
             </div>
           ))}
@@ -634,7 +674,7 @@ export default function Signup() {
             >
               {showPwd ? "Hide" : "Show"}
             </button>
-            
+
             <div className="strength-container">
               <div className="strength-bar">
                 <div
@@ -664,6 +704,47 @@ export default function Signup() {
             />
           </div>
 
+          {/* ✅ CUSTOMER PHONE (only phone) */}
+          {role === "customer" && (
+            <div className="field">
+              <span className="label">Phone Number</span>
+              <input
+                name="phone"
+                placeholder="Enter your mobile number"
+                value={form.phone}
+                onChange={onChange}
+                inputMode="numeric"
+                required
+              />
+            </div>
+          )}
+
+          {/* ✅ DRIVER: phone + vehicle (same layout as before) */}
+          {role === "driver" && (
+            <div className="form-row">
+              <div className="field">
+                <span className="label">Phone Number</span>
+                <input
+                  name="phone"
+                  placeholder="Enter your mobile number"
+                  value={form.phone}
+                  onChange={onChange}
+                  inputMode="numeric"
+                  required
+                />
+              </div>
+              <div className="field">
+                <span className="label">Vehicle Type</span>
+                <input
+                  name="vehicle"
+                  placeholder="e.g. Car, Motorbike, Bicycle"
+                  value={form.vehicle}
+                  onChange={onChange}
+                />
+              </div>
+            </div>
+          )}
+
           <label className="terms">
             <input
               type="checkbox"
@@ -685,16 +766,18 @@ export default function Signup() {
             {loading ? (
               <>
                 <span>Creating Account...</span>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  {[1, 2, 3].map(i => (
+                <div style={{ display: "flex", gap: "4px" }}>
+                  {[1, 2, 3].map((i) => (
                     <div
                       key={i}
                       style={{
-                        width: '6px',
-                        height: '6px',
-                        background: 'white',
-                        borderRadius: '50%',
-                        animation: `bounce 1.4s infinite ease-in-out ${i * 0.16}s`
+                        width: "6px",
+                        height: "6px",
+                        background: "white",
+                        borderRadius: "50%",
+                        animation: `bounce 1.4s infinite ease-in-out ${
+                          i * 0.16
+                        }s`,
                       }}
                     />
                   ))}
@@ -706,8 +789,7 @@ export default function Signup() {
           </button>
 
           <div className="login-link">
-            Already have an account?{" "}
-            <Link to="/login">Log in here</Link>
+            Already have an account? <Link to="/login">Log in here</Link>
           </div>
         </form>
       </motion.div>

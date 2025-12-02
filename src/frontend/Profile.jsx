@@ -34,6 +34,9 @@ export default function Profile() {
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phone || "");
+  const [vehicle, setVehicle] = useState(user?.vehicle || ""); 
+
   const [savingName, setSavingName] = useState(false);
   const [toast, setToast] = useState("");
   const [error, setError] = useState("");
@@ -44,6 +47,7 @@ export default function Profile() {
   const [deliveredOrders, setDeliveredOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
+  // --- Password Modal State ---
   const [showPwdModal, setShowPwdModal] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -52,11 +56,27 @@ export default function Profile() {
   const [pwdError, setPwdError] = useState("");
   const [pwdSuccess, setPwdSuccess] = useState("");
 
+  // --- Phone Modal State ---
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [editingPhone, setEditingPhone] = useState("");
+  const [phoneLoading, setPhoneLoading] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  const [phoneSuccess, setPhoneSuccess] = useState("");
+
+  // --- Vehicle Modal State (Driver Only) ---
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState("");
+  const [vehicleLoading, setVehicleLoading] = useState(false);
+  const [vehicleError, setVehicleError] = useState("");
+  const [vehicleSuccess, setVehicleSuccess] = useState("");
+
   // Sync local state when auth user changes
   useEffect(() => {
     if (user) {
       setName(user.name || "");
       setEmail(user.email || "");
+      setPhone(user.phone || "");
+      setVehicle(user.vehicle || ""); 
     }
   }, [user]);
 
@@ -67,7 +87,13 @@ export default function Profile() {
     const load = async () => {
       try {
         setLoadingOrders(true);
-        const res = await api.get("/orders");
+        
+        // ✅ FETCH LOGIC: Driver vs Customer
+        const endpoint = user?.role === 'driver' 
+          ? "/orders/driver/all" 
+          : "/orders";
+
+        const res = await api.get(endpoint);
         if (!isMounted) return;
 
         const all = res.data || [];
@@ -83,11 +109,11 @@ export default function Profile() {
       }
     };
 
-    load();
+    if (user) load();
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [user]);
 
   // Handle avatar preview (frontend only)
   const onAvatarChange = (e) => {
@@ -112,7 +138,6 @@ export default function Profile() {
       setSavingName(true);
       const res = await api.patch("/auth/update-profile", { name: name.trim() });
 
-      // Update AuthContext user so navbar etc shows new name
       if (res.data?.user) {
         login(res.data.user, token);
       }
@@ -123,6 +148,74 @@ export default function Profile() {
       setError(err.response?.data?.message || "Failed to update profile");
     } finally {
       setSavingName(false);
+    }
+  };
+
+  // Save Phone Number
+  const handleSavePhone = async (e) => {
+    e.preventDefault();
+    setPhoneError("");
+    setPhoneSuccess("");
+
+    if (!editingPhone || editingPhone.length < 8) {
+      setPhoneError("Phone number is too short.");
+      return;
+    }
+
+    try {
+      setPhoneLoading(true);
+      const res = await api.patch("/auth/update-phone", { phone: editingPhone });
+
+      if (res.data?.user) {
+        login(res.data.user, token);
+        setPhone(res.data.user.phone);
+      }
+
+      setPhoneSuccess("Phone updated successfully.");
+      
+      setTimeout(() => {
+        setShowPhoneModal(false);
+        setPhoneSuccess("");
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+      setPhoneError(err.response?.data?.message || "Failed to update phone.");
+    } finally {
+      setPhoneLoading(false);
+    }
+  };
+
+  // ✅ Save Vehicle
+  const handleSaveVehicle = async (e) => {
+    e.preventDefault();
+    setVehicleError("");
+    setVehicleSuccess("");
+
+    if (!editingVehicle || editingVehicle.trim().length < 2) {
+        setVehicleError("Vehicle name too short.");
+        return;
+    }
+
+    try {
+        setVehicleLoading(true);
+        const res = await api.patch("/auth/update-vehicle", { vehicle: editingVehicle });
+
+        if (res.data?.user) {
+            login(res.data.user, token);
+            setVehicle(res.data.user.vehicle);
+        }
+
+        setVehicleSuccess("Vehicle updated successfully.");
+        
+        setTimeout(() => {
+            setShowVehicleModal(false);
+            setVehicleSuccess("");
+        }, 1000);
+    } catch (err) {
+        console.error(err);
+        setVehicleError(err.response?.data?.message || "Failed to update vehicle.");
+    } finally {
+        setVehicleLoading(false);
     }
   };
 
@@ -610,6 +703,52 @@ export default function Profile() {
                       <div className="field-value">{email}</div>
                     </div>
 
+                    {/* Phone Field */}
+                    <div className="field">
+                      <div className="field-label">Phone Number</div>
+                      <div className="field-inline" style={{ marginTop: 6 }}>
+                        <div className="field-value">
+                            {phone || <span style={{opacity:0.5}}>No phone set</span>}
+                        </div>
+                        <button
+                          type="button"
+                          className="small-btn"
+                          onClick={() => {
+                            setEditingPhone(phone);
+                            setShowPhoneModal(true);
+                            setPhoneError("");
+                            setPhoneSuccess("");
+                          }}
+                        >
+                          Change
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* ✅ Vehicle Field (DRIVERS ONLY) */}
+                    {user?.role === "driver" && (
+                        <div className="field">
+                        <div className="field-label">Vehicle</div>
+                        <div className="field-inline" style={{ marginTop: 6 }}>
+                            <div className="field-value">
+                                {vehicle || <span style={{opacity:0.5}}>No vehicle set</span>}
+                            </div>
+                            <button
+                            type="button"
+                            className="small-btn"
+                            onClick={() => {
+                                setEditingVehicle(vehicle);
+                                setShowVehicleModal(true);
+                                setVehicleError("");
+                                setVehicleSuccess("");
+                            }}
+                            >
+                            Change
+                            </button>
+                        </div>
+                        </div>
+                    )}
+
                     <div className="field">
                       <div className="field-label">Password</div>
                       <div className="field-inline" style={{ marginTop: 6 }}>
@@ -744,7 +883,7 @@ export default function Profile() {
         </ElectricBorder>
       </motion.div>
 
-      {/* ✅ Change password modal */}
+      {/* Change password modal */}
       <AnimatePresence>
         {showPwdModal && (
           <motion.div
@@ -814,6 +953,132 @@ export default function Profile() {
                     disabled={pwdLoading}
                   >
                     {pwdLoading ? "Updating..." : "Update password"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Change PHONE modal */}
+      <AnimatePresence>
+        {showPhoneModal && (
+          <motion.div
+            className="modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="modal-card"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+            >
+              <div className="modal-header">
+                <div className="modal-title">Change phone number</div>
+                <button
+                  className="modal-close"
+                  onClick={() => setShowPhoneModal(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={handleSavePhone}>
+                <div className="modal-field">
+                  <label>New phone number</label>
+                  <input
+                    type="text"
+                    value={editingPhone}
+                    onChange={(e) => setEditingPhone(e.target.value)}
+                    placeholder="+961..."
+                  />
+                </div>
+
+                {phoneError && <div className="error-text">{phoneError}</div>}
+                {phoneSuccess && (
+                  <div className="modal-success">{phoneSuccess}</div>
+                )}
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="link-btn"
+                    onClick={() => setShowPhoneModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="primary-btn"
+                    disabled={phoneLoading}
+                  >
+                    {phoneLoading ? "Saving..." : "Save number"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ✅ Change VEHICLE modal (DRIVERS ONLY) */}
+      <AnimatePresence>
+        {showVehicleModal && (
+          <motion.div
+            className="modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="modal-card"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+            >
+              <div className="modal-header">
+                <div className="modal-title">Change vehicle</div>
+                <button
+                  className="modal-close"
+                  onClick={() => setShowVehicleModal(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveVehicle}>
+                <div className="modal-field">
+                  <label>Vehicle Name / Model</label>
+                  <input
+                    type="text"
+                    value={editingVehicle}
+                    onChange={(e) => setEditingVehicle(e.target.value)}
+                    placeholder="e.g. Toyota Camry (Red)"
+                  />
+                </div>
+
+                {vehicleError && <div className="error-text">{vehicleError}</div>}
+                {vehicleSuccess && (
+                  <div className="modal-success">{vehicleSuccess}</div>
+                )}
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="link-btn"
+                    onClick={() => setShowVehicleModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="primary-btn"
+                    disabled={vehicleLoading}
+                  >
+                    {vehicleLoading ? "Saving..." : "Save vehicle"}
                   </button>
                 </div>
               </form>
