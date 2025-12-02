@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../frontend/axios"; // axios instance
 
+
 const CATEGORIES = [
   "All",
   "Groceries",
@@ -26,17 +27,16 @@ export default function Catalog() {
 
   // ✅ FETCH PRODUCTS FROM BACKEND
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
-      .then((res) => res.json())
-      .then((data) => {
-        setProductsData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("❌ Failed to fetch products:", err);
-        toast.error("Failed to load products");
-        setLoading(false);
-      });
+    api.get("/products")
+  .then((res) => {
+    setProductsData(res.data);
+    setLoading(false);
+  })
+  .catch((err) => {
+    console.error("❌ Failed to fetch products:", err);
+    toast.error("Failed to load products");
+    setLoading(false);
+  });
   }, []);
 
   // ✅ REAL ADD TO CART LOGIC (AUTH LOCKED)

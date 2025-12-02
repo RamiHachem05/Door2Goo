@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import api from "../frontend/axios";
+
+
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -94,20 +97,16 @@ export default function Signup() {
     setToast("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
-          role,
-          phone: form.phone,
-          vehicle: form.vehicle,
-        }),
-      });
+      const res = await api.post("/auth/signup", {
+  name: form.name,
+  email: form.email,
+  password: form.password,
+  role,
+  phone: form.phone,
+  vehicle: form.vehicle,
+});
 
-      const data = await res.json();
+const data = res.data;
       if (!res.ok) throw new Error(data.message || "Signup failed");
 
       // animate steps 2→4 like the old version
