@@ -84,53 +84,54 @@ export default function Signup() {
     (role !== "driver" || form.vehicle.trim().length > 0); // vehicle only for driver
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!isValidPhone(form.phone)) {
-      setToast("Invalid phone number.");
-      return;
+  if (!isValidPhone(form.phone)) {
+    setToast("Invalid phone number.");
+    return;
+  }
+
+  if (!canSubmit) return;
+
+  setLoading(true);
+  setToast("");
+
+  try {
+    const res = await api.post("/auth/signup", {
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      role,
+      phone: form.phone,
+      vehicle: form.vehicle,
+    });
+
+    const data = res.data; // ✅ Axios success
+
+    // ✅ Animate success steps
+    for (let step = 2; step <= 4; step++) {
+      setCurrentStep(step);
+      await new Promise((resolve) => setTimeout(resolve, 250));
     }
 
-    if (!canSubmit) return;
+    setToast("Welcome to Door2Go! Your account has been created.");
 
-    setLoading(true);
-    setToast("");
+    setTimeout(() => {
+      setToast("");
+      navigate("/login");
+    }, 1500);
 
-    try {
-      const res = await api.post("/auth/signup", {
-  name: form.name,
-  email: form.email,
-  password: form.password,
-  role,
-  phone: form.phone,
-  vehicle: form.vehicle,
-});
-
-const data = res.data;
-      if (!res.ok) throw new Error(data.message || "Signup failed");
-
-      // animate steps 2→4 like the old version
-      for (let step = 2; step <= 4; step++) {
-        setCurrentStep(step);
-        // small delay between each step
-        // eslint-disable-next-line no-await-in-loop
-        await new Promise((resolve) => setTimeout(resolve, 250));
-      }
-
-      setToast("Welcome to Door2Go! Your account has been created.");
-
-      setTimeout(() => {
-        setToast("");
-        navigate("/login");
-      }, 1500);
-    } catch (err) {
-      console.error(err);
-      setToast(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  } catch (err) {
+    console.error(err);
+    setToast(
+      err.response?.data?.message ||
+      err.message ||
+      "Signup failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="signup-page">
       <style>{`

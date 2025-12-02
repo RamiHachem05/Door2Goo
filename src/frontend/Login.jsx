@@ -31,44 +31,46 @@ export default function Login() {
     !loading;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!canSubmit) return;
+  e.preventDefault();
+  if (!canSubmit) return;
 
-    setLoading(true);
-    setToast("");
+  setLoading(true);
+  setToast("");
 
-    try {
-      const res = await api.post("/auth/login", {
-  email: form.email,
-  password: form.password,
-});
+  try {
+    const res = await api.post("/auth/login", {
+      email: form.email,
+      password: form.password,
+    });
 
-const data = res.data;
+    const data = res.data; // ✅ Axios success auto here
 
-      if (!res.ok) {
-        throw new Error(data?.message || "Login failed");
-      }
+    // ✅ SAVE USER + TOKEN
+    login(data.user, data.token);
 
-      login(data.user, data.token);
+    setToast(`Welcome back, ${data.user.name || "Door2Go user"}!`);
 
-      setToast(`Welcome back, ${data.user.name || "Door2Go user"}!`);
+    const redirectTo =
+      location.state?.redirectTo && location.state.redirectTo !== "/login"
+        ? location.state.redirectTo
+        : "/dashboard";
 
-      const redirectTo =
-        location.state?.redirectTo && location.state.redirectTo !== "/login"
-          ? location.state.redirectTo
-          : "/dashboard";
+    setTimeout(() => {
+      setToast("");
+      navigate(redirectTo, { replace: true });
+    }, 1000);
 
-      setTimeout(() => {
-        setToast("");
-        navigate(redirectTo, { replace: true });
-      }, 1000);
-    } catch (err) {
-      console.error(err);
-      setToast(err.message || "Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    setToast(
+      err.response?.data?.message ||
+      err.message ||
+      "Login failed. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   
   return (
     <div className="login-page">
