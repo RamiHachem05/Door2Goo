@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import api from "../frontend/axios";
 
 export default function Details() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
-    fetch(`http://localhost:5000/api/products/${id}`)
-      .then(res => res.json())
-      .then(data => setProduct(data))
-      .catch(err => console.error(err));
+    api
+      .get(`/products/${id}`)
+      .then((res) => {
+        setProduct(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("❌ Failed to load product details:", err);
+        setError("Failed to load product details");
+        setLoading(false);
+      });
 
     return () => {
       document.body.style.overflow = "auto";
@@ -26,14 +36,24 @@ export default function Details() {
   return (
     <>
       <div className="overlay" onClick={handleClose}></div>
+
       <div className="popup">
-        <h2>{product?.name || "Loading..."}</h2>
-        <p className="desc">
-          {product?.description || "Fetching product details..."}
-        </p>
-        <div className="actions">
-          <button onClick={handleClose} className="btn-primary">OK</button>
-        </div>
+        {loading ? (
+          <h2>Loading...</h2>
+        ) : error ? (
+          <h2>{error}</h2>
+        ) : (
+          <>
+            <h2>{product?.name}</h2>
+            <p className="desc">{product?.description}</p>
+
+            <div className="actions">
+              <button onClick={handleClose} className="btn-primary">
+                OK
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       <style>{`
@@ -43,6 +63,7 @@ export default function Details() {
           background: rgba(0, 0, 0, 0.28);
           z-index: 1000;
         }
+
         .popup {
           position: fixed;
           top: 50%;
@@ -75,6 +96,7 @@ export default function Details() {
           padding: 10px 24px;
           border-radius: 10px;
           font-weight: 700;
+          cursor: pointer;
         }
       `}</style>
     </>

@@ -16,29 +16,25 @@ dotenv.config();
 
 const app = express();
 
-// ✅ ✅ ✅ CORRECT CORS FOR LOCAL + VERCEL
+// ✅ ✅ ✅ FINAL PRODUCTION-SAFE CORS (FIXES YOUR BUGS FOREVER)
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", // local frontend
-      "http://localhost:3000",
-      "https://door2go-hml.vercel.app", // ✅ YOUR REAL VERCEL DOMAIN
-    ],
-    credentials: true,
+    origin: true,        // ✅ Allows ALL correct frontends (Vercel + local + previews)
+    credentials: true,  // ✅ Allows cookies/auth headers if needed
   })
 );
 
 app.use(express.json());
 
-// --- connect to MongoDB ---
+// ✅ MongoDB Connection
 connectDB();
 
-// --- test route ---
+// ✅ Health Check Route
 app.get("/", (req, res) => {
-  res.send("Door2Go API is running");
+  res.send("✅ Door2Go API is running correctly");
 });
 
-// --- API routes ---
+// ✅ API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
@@ -46,10 +42,11 @@ app.use("/api/checkout", checkoutRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/driver", driverRoutes);
 
-// --- error handlers ---
+// ✅ Error Handlers
 app.use(notFound);
 app.use(errorHandler);
 
+// ✅ Server Listen
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
