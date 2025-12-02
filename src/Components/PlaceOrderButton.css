@@ -1,20 +1,21 @@
 :root {
-    --primary: #ef4444;
-    --primary-light: #f87171;
-    --dark: #1C212E;
+    /* Updated for Electric Dark Theme */
+    --primary: #39a0ff;        /* Electric Blue Truck */
+    --primary-light: #7cc5ff;  /* Lighter Blue */
+    --dark: #161822;           /* Matches Card Background */
     --grey-dark: #3F4656;
     --grey: #6C7486;
     --grey-light: #CDD9ED;
     --white: #FFF;
     --green: #16BF78;
     --sand: #fbbf24;
-    --sand-light: #fbbf24;
+    --sand-light: #fcd34d;
 }
 
 /* NAMESPACE: all styles scoped under .place-order */
 .place-order .order {
     appearance: none;
-    border: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     background: var(--dark);
     position: relative;
     height: 63px;
@@ -23,10 +24,17 @@
     outline: none;
     cursor: pointer;
     border-radius: 32px;
-    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    /* Removed the mask because it cuts off glow/shadows */
+    /* -webkit-mask-image: -webkit-radial-gradient(white, black); */
     -webkit-tap-highlight-color: transparent;
     overflow: hidden;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.place-order .order:hover {
+    box-shadow: 0 6px 20px rgba(57, 160, 255, 0.25); /* Blue glow on hover */
+    border-color: rgba(57, 160, 255, 0.4);
 }
 
     .place-order .order span {
@@ -39,9 +47,11 @@
         line-height: 24px;
         color: var(--white);
         font-size: 16px;
-        font-weight: 500;
+        font-weight: 600;
+        letter-spacing: 0.5px;
         opacity: var(--o);
         transition: opacity 0.3s ease;
+        z-index: 2;
     }
 
         .place-order .order span.default {
@@ -162,7 +172,7 @@
 
             .place-order .order .truck .front:after {
                 border-radius: 2px 9px 9px 2px;
-                background: var(--primary);
+                background: var(--primary); /* Uses new Blue */
                 width: 24px;
                 height: 41px;
                 right: 0;

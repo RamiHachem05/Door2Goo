@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
 import "./PlaceOrderButton.css";
-import api from "../frontend/axios";
-
 
 export default function PlaceOrderButton({ onComplete }) {
     const [animating, setAnimating] = useState(false);
@@ -13,8 +11,8 @@ export default function PlaceOrderButton({ onComplete }) {
 
         // match your CSS timing (10s)
         timeoutRef.current = setTimeout(() => {
-            setAnimating(false);
-            onComplete?.(); // optional callback when finished
+            // setAnimating(false); // Optional: keep it "placed" state
+            onComplete?.(); 
         }, 10000);
     };
 
@@ -44,7 +42,7 @@ export default function PlaceOrderButton({ onComplete }) {
                 <div className="box" />
 
                 {/* labels */}
-                <span className="default">Place order</span>
+                <span className="default">Place Order</span>
                 <span className="success">
                     Placed
                     <svg viewBox="0 0 12 10" aria-hidden="true">

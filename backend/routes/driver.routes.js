@@ -4,7 +4,7 @@ import { requireAuth, requireRole } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// POST /api/driver/location
+// POST /api/driver/location - Update current coords
 router.post(
   "/location",
   requireAuth,
@@ -33,14 +33,19 @@ router.post(
 router.get(
   "/location/:driverId",
   requireAuth,
-  requireRole("admin", "driver"),
+  requireRole("admin", "driver", "customer"), // Allow customers to see driver location if needed
   async (req, res) => {
-  const doc = await DriverLocation.findOne({
-    driverId: req.params.driverId,
-  }).populate("driverId");
+    try {
+      const doc = await DriverLocation.findOne({
+        driverId: req.params.driverId,
+      }).populate("driverId", "name vehicle phone");
 
-  if (!doc) return res.status(404).json({ message: "Location not found" });
-  res.json(doc);
-});
+      if (!doc) return res.status(404).json({ message: "Location not found" });
+      res.json(doc);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
 
 export default router;

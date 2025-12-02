@@ -1,4 +1,4 @@
-//user.js
+// backend/models/User.js
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -10,10 +10,18 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["customer", "driver", "admin"],
-      default: "customer"
+      default: "customer",
     },
-    phone: String,
-    address: String
+
+    phone: {
+      type: String,
+      required: true,
+      minlength: 8,
+      maxlength: 20,
+    },
+
+    // ✅ Added Vehicle field
+    vehicle: { type: String, default: "" },
   },
   { timestamps: true }
 );

@@ -1,4 +1,3 @@
-// src/frontend/OrderTracking.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import api from "../frontend/axios";
 
@@ -86,10 +85,11 @@ export default function OrderTracking() {
 
     const trackingCode = toTrackingCode(order);
 
+    // ✅ DRIVER INFO (Now populated from backend)
     const driver = order.driverId || {};
-    const driverName = driver.name || driver.fullName || driver.email || "—";
-    const driverPhone = driver.phone || driver.mobile || "—";
-    const driverPlate = driver.vehiclePlate || "—";
+    const driverName = driver.name || "—";
+    const driverPhone = driver.phone || "—";
+    const driverVehicle = driver.vehicle || "—";
 
     const title =
       order.items && order.items.length
@@ -111,7 +111,7 @@ export default function OrderTracking() {
       driver: {
         name: driverName,
         phone: driverPhone,
-        plate: driverPlate,
+        vehicle: driverVehicle,
       },
       notes: `Total items: ${order.items?.length || 0} · Total: $${order.totalPrice.toFixed(
         2
@@ -240,58 +240,53 @@ export default function OrderTracking() {
             {active && (
               <>
                 <div className="row" style={{ marginTop: 14 }}>
-  <div style={{ width: "100%" }}>
+                  <div style={{ width: "100%" }}>
+                    <div className="muted" style={{ marginBottom: 8 }}>
+                      Tracking ID: {active.trackingCode}
+                    </div>
 
-    {/* ✅ Tracking ID */}
-    <div className="muted" style={{ marginBottom: 8 }}>
-      Tracking ID: {active.trackingCode}
-    </div>
+                    {/* ITEMS LIST */}
+                    <div style={{ marginTop: 6 }}>
+                      {active.raw.items?.map((item) => (
+                        <div
+                          key={item.productId?._id}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            fontSize: 14,
+                            marginBottom: 6,
+                            opacity: 0.95
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            {item.productId?.image && (
+                                <img
+                                src={item.productId?.image}
+                                alt={item.productId?.name}
+                                style={{
+                                    width: 28,
+                                    height: 28,
+                                    borderRadius: 6,
+                                    objectFit: "cover",
+                                    border: "1px solid rgba(255,255,255,0.15)"
+                                }}
+                                />
+                            )}
+                            <span>
+                              {item.productId?.name} × {item.quantity}
+                            </span>
+                          </div>
+                          <span>
+                            ${(item.productId?.price * item.quantity).toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="status" style={{color:'#ffd36b'}}>{active.statusLabel}</div>
+                </div>
 
-    {/* ✅ ORDER ITEMS LIST (NEW) */}
-    <div style={{ marginTop: 6 }}>
-      {active.raw.items.map((item) => (
-  <div
-    key={item.productId?._id}
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      fontSize: 14,
-      marginBottom: 6,
-      opacity: 0.95
-    }}
-  >
-    {/* ✅ LEFT SIDE: IMAGE + NAME */}
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <img
-        src={item.productId?.image}
-        alt={item.productId?.name}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 6,
-          objectFit: "cover",
-          border: "1px solid rgba(255,255,255,0.15)"
-           }}
-          />
-        <span>
-         {item.productId?.name} × {item.quantity}
-          </span>
-        </div>
-
-        {/* ✅ RIGHT SIDE: PRICE */}
-        <span>
-         $
-          {(item.productId?.price * item.quantity).toFixed(2)}
-        </span>
-        </div>
-              ))}
-              </div>
-            </div>
-
-            {/* ✅ Status on the right */}
-            <div className="status">{active.statusLabel}</div>
-          </div>
                 <div className="progress">
                   <div
                     className="bar"
@@ -358,7 +353,7 @@ export default function OrderTracking() {
                 Vehicle
               </div>
               <div style={{ fontWeight: 700 }}>
-                {active?.driver?.plate || "—"}
+                {active?.driver?.vehicle || "—"}
               </div>
               <div className="muted" style={{ marginTop: 8 }}>
                 Phone

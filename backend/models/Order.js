@@ -1,4 +1,3 @@
-// backend/models/Order.js
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
@@ -20,6 +19,7 @@ const orderSchema = new mongoose.Schema(
       default: "pending"
     },
 
+    // ✅ Stores who is delivering this order
     driverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -29,9 +29,9 @@ const orderSchema = new mongoose.Schema(
     address: String,
     paymentMethod: { type: String, default: "cash" },
 
-    // ✅ NEW – optional, safe, used only by tracking UI
-    eta: { type: Date, default: null },          // estimated arrival time
-    addressFrom: { type: String, default: "" }   // pickup / store location
+    // ✅ Tracking helpers
+    eta: { type: Date, default: null },
+    addressFrom: { type: String, default: "Door2Go Hub" }
   },
   { timestamps: true }
 );
